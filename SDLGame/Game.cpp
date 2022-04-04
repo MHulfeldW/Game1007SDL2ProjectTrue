@@ -52,6 +52,8 @@ int Game::run()
 
 	myBackground = Sprite(pRenderer, "Assets/corona_bk.png");
 	myBackground.setSize(800, 900);
+	
+
 
 	bIsRunning = true;
 
@@ -130,6 +132,7 @@ void Game::input()
 
 void Game::update(const float deltaTime)
 {
+	updateBG();
 	updateCollisionChecks();
 	
 	
@@ -188,6 +191,7 @@ void Game::update(const float deltaTime)
 			iterator++;
 		}
 	}
+	spawnEnemyBullets(deltaTime);
 
 	sprites.shrink_to_fit();
 }
@@ -382,6 +386,54 @@ void Game::updateCollisionChecks()
 	}
 }
 
+void Game::spawnEnemyBullets(const float deltaTime)
+{	
+	for (int i = 0; i < sprites.size(); i++)
+	{
+		Sprite* pSprite = sprites[i];
+		if (pSprite->tag == SpriteTag::OBSTACLE)
+		{
+			if(timeBeforeNextEnemyShot==0.0f)
+			{ 
+				/*timeBeforeNextEnemyShot -= deltaTime;*/
+				/*timeBeforeNextEnemyShot = timeBetweenEnemyShots;*/
+
+				int projectilesPerShot = 3;
+				float spread = 1.0f;
+				float bulletSpeed = 400.0f;
+				for (int i = 0; i < projectilesPerShot; i++)
+				{
+					float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
+
+					std::cout << "shoot!" << std::endl;
+					Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
+					// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
+					Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
+
+					Vector2 launchPosition = Vector2{ pSprite->position.x + (pSprite->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
+															pSprite->position.y + pSprite->getSize().y
+					};
+
+					Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
+													  sin(angle) * bulletSpeed
+					};
+
+					pNewEnemyBullet->position = launchPosition;
+					pNewEnemyBullet->velocity = launchVelocity;
+
+					sprites.push_back(pEnemyBulletCastedToSprite);
+
+					
+					/*timeBeforeNextEnemyShot -= deltaTime;*/
+
+				}
+				
+			}
+		}
+	}
+	
+}
+
 void Game::spawnEnemy(const float deltaTime)
 {
 	int startVelocityVarianceX = 50;
@@ -416,36 +468,41 @@ void Game::spawnEnemy(const float deltaTime)
 	//Add to list of sprites to update/draw
 	sprites.push_back(pNewEnemy);
 	
-	timeBeforeNextEnemyShot -= deltaTime;
+	//timeBeforeNextEnemyShot -= deltaTime;
 
-	int projectilesPerShot = 3;
-	float spread = 1.0f;
-	float bulletSpeed = 400.0f;
-	for (int i = 0; i < projectilesPerShot; i++)
-	{
-		float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
+	//int projectilesPerShot = 3;
+	//float spread = 1.0f;
+	//float bulletSpeed = 400.0f;
+	//for (int i = 0; i < projectilesPerShot; i++)
+	//{
+	//	float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
 
-		std::cout << "shoot!" << std::endl;
-		Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
-		// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
-		Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
+	//	std::cout << "shoot!" << std::endl;
+	//	Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
+	//	// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
+	//	Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
 
-		Vector2 launchPosition = Vector2{ pNewEnemy->position.x + (pNewEnemy->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
-												pNewEnemy->position.y + pNewEnemy->getSize().y
-		};
+	//	Vector2 launchPosition = Vector2{ pNewEnemy->position.x + (pNewEnemy->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
+	//											pNewEnemy->position.y + pNewEnemy->getSize().y
+	//	};
 
-		Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
-										  sin(angle) * bulletSpeed
-		};
-			
-		pNewEnemyBullet->position = launchPosition;
-		pNewEnemyBullet->velocity = launchVelocity;
+	//	Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
+	//									  sin(angle) * bulletSpeed
+	//	};
+	//		
+	//	pNewEnemyBullet->position = launchPosition;
+	//	pNewEnemyBullet->velocity = launchVelocity;
 
-		sprites.push_back(pEnemyBulletCastedToSprite);
-			
-		timeBeforeNextEnemyShot -= deltaTime;
-		timeBeforeNextEnemyShot = timeBetweenEnemyShots;
-	}
+	//	sprites.push_back(pEnemyBulletCastedToSprite);
+	//		
+	//	timeBeforeNextEnemyShot -= deltaTime;
+	//	timeBeforeNextEnemyShot = timeBetweenEnemyShots;
+	//}
 	
+}
+
+void Game::updateBG()
+{
+	myBackground.setPosition(0, myBackground.position.y + 5);
 }
 	

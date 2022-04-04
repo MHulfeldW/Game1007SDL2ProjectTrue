@@ -73,6 +73,8 @@ public:
 
 	void updatePlayerActions(const float deltaTime);
 	void updateCollisionChecks();
+	void spawnEnemyBullets(const float deltaTime);
 	void spawnEnemy(const float deltaTime);
+	void updateBG();
 };
 
