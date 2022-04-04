@@ -33,6 +33,7 @@ enum class SpriteTag
 	NONE = -1,
 	PLAYER,
 	ENEMY,
+	ENEMY_BULLET,
 	OBSTACLE,
 	BULLET
 };

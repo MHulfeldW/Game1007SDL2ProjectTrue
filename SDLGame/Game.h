@@ -42,6 +42,8 @@ class Game
 
 	const float timeBetweenShots = 0.25f; // this represents fire rate (1/fire rate to be exact)
 	float timeBeforeNextShot = 0.0f; // this will tick down
+	const float timeBetweenEnemyShots = 0.25f;
+	float timeBeforeNextEnemyShot = 0.0f;
 
 	float gameTime = 0.0f; // seconds since start of game
 	float fixedDeltaTime = 0.016f; // time between frames 0.016 == 1/60
@@ -69,6 +71,6 @@ public:
 
 	void updatePlayerActions(const float deltaTime);
 	void updateCollisionChecks();
-	void spawnEnemy();
+	void spawnEnemy(const float deltaTime);
 };
 

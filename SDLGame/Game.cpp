@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include "Bullet.h"
+#include "Enemy_Bullet.h"
 
 Game::Game()
 {
@@ -40,16 +41,17 @@ int Game::run()
 		return -1;
 	}
 
-	myShip = Sprite(pRenderer, "Assets/playerShip3_red.png");
+	myShip = Sprite(pRenderer, "Assets/Spaceship_tut.png");
 	myShip.setPosition(windowSizeX/2 - myShip.getSize().x*0.5, windowSizeY - myShip.getSize().y);
+	myShip.tag = SpriteTag::PLAYER;
 	//sprites.push_back(&myShip); // & is the reference operator. It will return a pointer to the address of the object to its right
 
-	myShipTest = Sprite(pRenderer, "Assets/playerShip2_red.png");
+	/*myShipTest = Sprite(pRenderer, "Assets/playerShip2_red.png");
 	myShipTest.setPosition(windowSizeX / 2 - myShipTest.getSize().x * 0.5, windowSizeY - myShipTest.getSize().y);
-	sprites.push_back(&myShipTest);
+	sprites.push_back(&myShipTest);*/
 
-	myBackground = Sprite(pRenderer, "Assets/Backgrounds/purple.png");
-	myBackground.setSize(windowSizeX, windowSizeY);
+	myBackground = Sprite(pRenderer, "Assets/corona_bk.png");
+	myBackground.setSize(800, 900);
 
 	bIsRunning = true;
 
@@ -136,7 +138,7 @@ void Game::update(const float deltaTime)
 
 	if (enemySpawnTimer < 0.0f)
 	{
-		spawnEnemy();
+		spawnEnemy(deltaTime);
 		enemySpawnTimer = enemySpawnInterval;
 
 		if (enemySpawnInterval > enemySpawnIntervalMin)
@@ -318,19 +320,32 @@ void Game::updatePlayerActions(const float deltaTime)
 			timeBeforeNextShot = timeBetweenShots;
 		}
 	}
+	if (myShip.position.x < 0)
+	{
+		myShip.position.x = 0;
+	}
+	else if (myShip.position.x > myBackground.getSize().x - myShip.getSize().x)
+	{
+		myShip.position.x = myBackground.getSize().x - myShip.getSize().x;
+	}
+
+	if (myShip.position.y < 0)
+	{
+		myShip.position.y = 0;
+	}
+	else if (myShip.position.y > myBackground.getSize().y - myShip.getSize().y)
+	{
+		myShip.position.y = myBackground.getSize().y - myShip.getSize().y;
+	}
 
 }
 
 void Game::updateCollisionChecks()
 {
-	if (myShip.isCollidingWith(&myShipTest))
-	{
-		std::cout << "collide!" << std::endl;
-	}
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		Sprite* pSprite = sprites[i];
-		if (pSprite->tag == SpriteTag::OBSTACLE)
+		if (pSprite->tag == SpriteTag::OBSTACLE ||pSprite->tag==SpriteTag::ENEMY_BULLET) //Player should only be deleted if touching bullet or enemies
 		{
 			if (myShip.isCollidingWith(pSprite))
 			{
@@ -355,26 +370,28 @@ void Game::updateCollisionChecks()
 					pSpriteA->isMarkedForDeletion = true;
 					pSpriteB->isMarkedForDeletion = true;
 				}
+				if (pSpriteA->tag == SpriteTag::PLAYER && pSpriteB->tag == SpriteTag::ENEMY_BULLET ||
+					pSpriteA->tag == SpriteTag::ENEMY_BULLET && pSpriteB->tag == SpriteTag::PLAYER)
+				{
+					pSpriteA->isMarkedForDeletion = true;
+					pSpriteB->isMarkedForDeletion = true;
+				}
 			}
 		}
 	}
 }
 
-void Game::spawnEnemy()
+void Game::spawnEnemy(const float deltaTime)
 {
 	int startVelocityVarianceX = 50;
 	int startVelocityY = 200;
 
-	const int NUM_ASTEROID_SPRITES = 8;
-	const char* asteroidSpriteImages[NUM_ASTEROID_SPRITES] = 
-	{	"Assets/Meteors/meteorBrown_big1.png",
-		"Assets/Meteors/meteorGrey_big2.png",
-		"Assets/Meteors/meteorBrown_big3.png",
-		"Assets/Meteors/meteorBrown_small1.png",
-		"Assets/Meteors/meteorBrown_small2.png",
-		"Assets/Meteors/meteorGrey_med2.png",
+	const int NUM_ASTEROID_SPRITES = 3;
+	const char* asteroidSpriteImages[NUM_ASTEROID_SPRITES] =
+	{
+		"Assets/Meteors/meteorBrown_tiny1.png",
 		"Assets/Meteors/meteorGrey_small1.png",
-		"Assets/Meteors/meteorGrey_tiny2.png"
+		"Assets/Meteors/meteorBrown_tiny2.png",
 	};
 	const char* spriteToSpawn = asteroidSpriteImages[rand() % NUM_ASTEROID_SPRITES];
 
@@ -384,17 +401,50 @@ void Game::spawnEnemy()
 	//Set start at random position near top of screen
 	Vector2 size = pNewEnemy->getSize();
 
-	Vector2 spawnPosition = Vector2{float(rand() % (windowSizeX - (int)size.x)),
+	Vector2 spawnPosition = Vector2{ float(rand() % (windowSizeX - (int)size.x)),
 									-size.y
 	};
 	pNewEnemy->position = spawnPosition;
 
 	//Set start velocity
-	Vector2 spawnVelocity = Vector2{ float((rand() % startVelocityVarianceX) - (startVelocityVarianceX/2)),
-									float(startVelocityY) 
+	Vector2 spawnVelocity = Vector2{ float((rand() % startVelocityVarianceX) - (startVelocityVarianceX / 2)),
+									float(startVelocityY)
 	};
 	pNewEnemy->velocity = spawnVelocity;
 
 	//Add to list of sprites to update/draw
 	sprites.push_back(pNewEnemy);
+	
+	timeBeforeNextEnemyShot -= deltaTime;
+
+	int projectilesPerShot = 3;
+	float spread = 1.0f;
+	float bulletSpeed = 400.0f;
+	for (int i = 0; i < projectilesPerShot; i++)
+	{
+		float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
+
+		std::cout << "shoot!" << std::endl;
+		Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
+		// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
+		Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
+
+		Vector2 launchPosition = Vector2{ pNewEnemy->position.x + (pNewEnemy->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
+												pNewEnemy->position.y - pNewEnemy->getSize().y
+		};
+
+		Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
+										  sin(angle) * bulletSpeed
+		};
+			
+		pNewEnemyBullet->position = launchPosition;
+		pNewEnemyBullet->velocity = launchVelocity;
+
+		sprites.push_back(pEnemyBulletCastedToSprite);
+			
+		timeBeforeNextEnemyShot -= deltaTime;
+		timeBeforeNextEnemyShot = timeBetweenEnemyShots;
+	}
+	
 }
+	

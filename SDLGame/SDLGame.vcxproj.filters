@@ -23,6 +23,9 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy_Bullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sprite.h">
@@ -37,5 +40,6 @@
     <ClInclude Include="Vector2.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy_Bullet.h" />
   </ItemGroup>
 </Project>
