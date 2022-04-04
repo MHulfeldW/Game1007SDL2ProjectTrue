@@ -41,7 +41,7 @@ int Game::run()
 		return -1;
 	}
 
-	myShip = Sprite(pRenderer, "Assets/Spaceship_tut.png");
+	myShip = Sprite(pRenderer, "Assets/CUTSpaceship1Y.png");
 	myShip.setPosition(windowSizeX/2 - myShip.getSize().x*0.5, windowSizeY - myShip.getSize().y);
 	myShip.tag = SpriteTag::PLAYER;
 	//sprites.push_back(&myShip); // & is the reference operator. It will return a pointer to the address of the object to its right
@@ -350,6 +350,7 @@ void Game::updateCollisionChecks()
 			if (myShip.isCollidingWith(pSprite))
 			{
 				myShip.isMarkedForDeletion = true;
+				pSprite->isMarkedForDeletion = true;
 				std::cout << "Game Over!" << std::endl;
 			}
 		}
@@ -389,9 +390,9 @@ void Game::spawnEnemy(const float deltaTime)
 	const int NUM_ASTEROID_SPRITES = 3;
 	const char* asteroidSpriteImages[NUM_ASTEROID_SPRITES] =
 	{
-		"Assets/Meteors/meteorBrown_tiny1.png",
-		"Assets/Meteors/meteorGrey_small1.png",
-		"Assets/Meteors/meteorBrown_tiny2.png",
+		"Assets/SMALLSpaceship_06_RED.png",
+		"Assets/Spaceship_06_RED.png",
+		"Assets/Spaceship_03_RED.png",
 	};
 	const char* spriteToSpawn = asteroidSpriteImages[rand() % NUM_ASTEROID_SPRITES];
 
@@ -430,7 +431,7 @@ void Game::spawnEnemy(const float deltaTime)
 		Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
 
 		Vector2 launchPosition = Vector2{ pNewEnemy->position.x + (pNewEnemy->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
-												pNewEnemy->position.y - pNewEnemy->getSize().y
+												pNewEnemy->position.y + pNewEnemy->getSize().y
 		};
 
 		Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
