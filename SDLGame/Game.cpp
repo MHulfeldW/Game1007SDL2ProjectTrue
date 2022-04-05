@@ -41,25 +41,20 @@ int Game::run()
 		return -1;
 	}
 
-	myShip = Sprite(pRenderer, "Assets/CUTSpaceship1Y.png");
+	myShip = Sprite(pRenderer, "Assets/Spaceship_tut.png");
 	myShip.setPosition(windowSizeX/2 - myShip.getSize().x*0.5, windowSizeY - myShip.getSize().y);
 	myShip.tag = SpriteTag::PLAYER;
-	//sprites.push_back(&myShip); // & is the reference operator. It will return a pointer to the address of the object to its right
 
-	/*myShipTest = Sprite(pRenderer, "Assets/playerShip2_red.png");
-	myShipTest.setPosition(windowSizeX / 2 - myShipTest.getSize().x * 0.5, windowSizeY - myShipTest.getSize().y);
-	sprites.push_back(&myShipTest);*/
-
-	myBackground = Sprite(pRenderer, "Assets/corona_bk.png");
+	myBackground = Sprite(pRenderer, "Assets/corona_up.png");
 	myBackground.setSize(windowSizeX,windowSizeY);
 
-	myBackground2 = Sprite(pRenderer, "Assets/corona_bk.png");
+	myBackground2 = Sprite(pRenderer, "Assets/corona_down.png");
 	myBackground2.setSize(windowSizeX, windowSizeY);
-	myBackground2.setPosition(0, -900);
+	myBackground2.setPosition(0, -myBackground2.getSize().y);
 
-	myBackground3 = Sprite(pRenderer, "Assets/corona_bk.png");
+	myBackground3 = Sprite(pRenderer, "Assets/corona_up.png");
 	myBackground3.setSize(windowSizeX, windowSizeY);
-	myBackground3.setPosition(0, -1800);
+	myBackground3.setPosition(0, -myBackground2.getSize().y * 2);
 	
 
 
@@ -314,7 +309,7 @@ void Game::updatePlayerActions(const float deltaTime)
 			{
 				float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
 
-				std::cout << "shoot!" << std::endl;
+				/*std::cout << "shoot!" << std::endl;*/
 				Bullet* pNewBullet = new Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
 				// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
 				Sprite* pBulletCastedToSprite = (Sprite*)pNewBullet; // cast from child class to base class pointer
@@ -407,15 +402,14 @@ void Game::spawnEnemyBullets(const float deltaTime)
 		{
 			if(timeBeforeNextEnemyShot==0.0f)
 			{ 
-				/*timeBeforeNextEnemyShot -= deltaTime;*/
 				/*timeBeforeNextEnemyShot = timeBetweenEnemyShots;*/
 
-				int projectilesPerShot = 3;
+				/*int projectilesPerShot = 3;
 				float spread = 1.0f;
 				float bulletSpeed = 400.0f;
 				for (int i = 0; i < projectilesPerShot; i++)
 				{
-					float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
+					float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);*/
 
 					std::cout << "shoot!" << std::endl;
 					Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
@@ -426,21 +420,22 @@ void Game::spawnEnemyBullets(const float deltaTime)
 															pSprite->position.y + pSprite->getSize().y
 					};
 
-					Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
+					/*Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
 													  sin(angle) * bulletSpeed
-					};
+					};*/
 
 					pNewEnemyBullet->position = launchPosition;
-					pNewEnemyBullet->velocity = launchVelocity;
+					/*pNewEnemyBullet->velocity = launchVelocity;*/
 
 					sprites.push_back(pEnemyBulletCastedToSprite);
 
 					
-					/*timeBeforeNextEnemyShot -= deltaTime;*/
-
-				}
+					
+					
+				/*}*/
 				
 			}
+		/*	timeBeforeNextEnemyShot -= deltaTime;*/
 		}
 	}
 	
@@ -451,14 +446,14 @@ void Game::spawnEnemy(const float deltaTime)
 	int startVelocityVarianceX = 50;
 	int startVelocityY = 200;
 
-	const int NUM_ASTEROID_SPRITES = 3;
-	const char* asteroidSpriteImages[NUM_ASTEROID_SPRITES] =
+	const int NUM_ENEMY_SPRITES = 3;
+	const char* enemySpriteImages[NUM_ENEMY_SPRITES] =
 	{
 		"Assets/SMALLSpaceship_06_RED.png",
 		"Assets/Spaceship_06_RED.png",
 		"Assets/Spaceship_03_RED.png",
 	};
-	const char* spriteToSpawn = asteroidSpriteImages[rand() % NUM_ASTEROID_SPRITES];
+	const char* spriteToSpawn = enemySpriteImages[rand() % NUM_ENEMY_SPRITES];
 
 	Sprite* pNewEnemy = new Sprite(pRenderer, spriteToSpawn);
 	pNewEnemy->tag = SpriteTag::OBSTACLE;
@@ -472,7 +467,7 @@ void Game::spawnEnemy(const float deltaTime)
 	pNewEnemy->position = spawnPosition;
 
 	//Set start velocity
-	Vector2 spawnVelocity = Vector2{ float((rand() % startVelocityVarianceX) - (startVelocityVarianceX / 2)),
+	Vector2 spawnVelocity = Vector2{ float((rand() % startVelocityVarianceX) - (startVelocityVarianceX / 3)),
 									float(startVelocityY)
 	};
 	pNewEnemy->velocity = spawnVelocity;
@@ -480,44 +475,15 @@ void Game::spawnEnemy(const float deltaTime)
 	//Add to list of sprites to update/draw
 	sprites.push_back(pNewEnemy);
 	
-	//timeBeforeNextEnemyShot -= deltaTime;
-
-	//int projectilesPerShot = 3;
-	//float spread = 1.0f;
-	//float bulletSpeed = 400.0f;
-	//for (int i = 0; i < projectilesPerShot; i++)
-	//{
-	//	float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
-
-	//	std::cout << "shoot!" << std::endl;
-	//	Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
-	//	// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
-	//	Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
-
-	//	Vector2 launchPosition = Vector2{ pNewEnemy->position.x + (pNewEnemy->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
-	//											pNewEnemy->position.y + pNewEnemy->getSize().y
-	//	};
-
-	//	Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
-	//									  sin(angle) * bulletSpeed
-	//	};
-	//		
-	//	pNewEnemyBullet->position = launchPosition;
-	//	pNewEnemyBullet->velocity = launchVelocity;
-
-	//	sprites.push_back(pEnemyBulletCastedToSprite);
-	//		
-	//	timeBeforeNextEnemyShot -= deltaTime;
-	//	timeBeforeNextEnemyShot = timeBetweenEnemyShots;
-	//}
 	
 }
 
 void Game::updateBG()
 {
-	myBackground.setPosition(0, myBackground.position.y + 5);
-	myBackground2.setPosition(0, myBackground2.position.y + 5);
-	myBackground3.setPosition(0, myBackground3.position.y + 5);
+	const int yOffset = 5;
+	myBackground.setPosition(0, myBackground.position.y + yOffset);
+	myBackground2.setPosition(0, myBackground2.position.y + yOffset);
+	myBackground3.setPosition(0, myBackground3.position.y + yOffset);
 
 	if (myBackground.position.y == myBackground.getSize().y)
 	{
