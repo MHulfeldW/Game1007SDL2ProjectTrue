@@ -51,7 +51,15 @@ int Game::run()
 	sprites.push_back(&myShipTest);*/
 
 	myBackground = Sprite(pRenderer, "Assets/corona_bk.png");
-	myBackground.setSize(800, 900);
+	myBackground.setSize(windowSizeX,windowSizeY);
+
+	myBackground2 = Sprite(pRenderer, "Assets/corona_bk.png");
+	myBackground2.setSize(windowSizeX, windowSizeY);
+	myBackground2.setPosition(0, -900);
+
+	myBackground3 = Sprite(pRenderer, "Assets/corona_bk.png");
+	myBackground3.setSize(windowSizeX, windowSizeY);
+	myBackground3.setPosition(0, -1800);
 	
 
 
@@ -203,6 +211,8 @@ void Game::draw()
 	SDL_RenderClear(pRenderer); // Clear canvas to color chosen
 
 	myBackground.draw(pRenderer);
+	myBackground2.draw(pRenderer);
+	myBackground3.draw(pRenderer);
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		sprites[i]->draw(pRenderer);
@@ -230,6 +240,8 @@ void Game::cleanup()
 		delete sprites[i];
 	}
 	myBackground.cleanup();
+	myBackground2.cleanup();
+	myBackground3.cleanup();
 }
 
 
@@ -504,5 +516,20 @@ void Game::spawnEnemy(const float deltaTime)
 void Game::updateBG()
 {
 	myBackground.setPosition(0, myBackground.position.y + 5);
+	myBackground2.setPosition(0, myBackground2.position.y + 5);
+	myBackground3.setPosition(0, myBackground3.position.y + 5);
+
+	if (myBackground.position.y == myBackground.getSize().y)
+	{
+		myBackground.setPosition(0, -myBackground.getSize().y);
+	}
+	if (myBackground2.position.y == myBackground2.getSize().y)
+	{
+		myBackground2.setPosition(0, -myBackground2.getSize().y);
+	}
+	if (myBackground3.position.y == myBackground3.getSize().y)
+	{
+		myBackground3.setPosition(0, -myBackground3.getSize().y);
+	}
 }
 	
