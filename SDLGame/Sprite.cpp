@@ -79,8 +79,8 @@ bool Sprite::isCollidingWith(Sprite* other)
 	//3.1 subtract positions to get vector from one to the other
 	Vector2 displacement = Vector2
 	{
-		other->position.x - position.x,
-		other->position.y - position.y
+		(other->position.x + other->getSize().x*0.5f) - (position.x+ getSize().x * 0.5f),
+		(other->position.y + other->getSize().y * 0.5f) - (position.y + getSize().y * 0.5f),
 	};
 	//3.2 use pythagorean theorem to find length of the displacment vector between sprites
 	//sqrt(x^2+y^2)

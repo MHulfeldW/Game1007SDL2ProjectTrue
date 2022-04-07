@@ -24,6 +24,15 @@
 #include <SDL.h> 
 #include "Sprite.h"
 #include <vector>
+#include <SDL_mixer.h>
+#include <minmax.h>
+
+enum class AudioChannel
+{
+	ANY = -1,
+	MUSIC,
+	LASER_BLAST
+};
 
 class Game
 {
@@ -44,7 +53,7 @@ class Game
 
 	const float timeBetweenShots = 0.25f; // this represents fire rate (1/fire rate to be exact)
 	float timeBeforeNextShot = 0.0f; // this will tick down
-	const float timeBetweenEnemyShots = 0.25f;
+	const float timeBetweenEnemyShots = 0.72f;
 	float timeBeforeNextEnemyShot = 0.0f;
 
 	float gameTime = 0.0f; // seconds since start of game
@@ -56,10 +65,20 @@ class Game
 	bool isLeftPressed	= false;
 	bool isRightPressed	= false;
 
+	bool isShooting = false;
+
 	//Enemy spawns
 	float enemySpawnTimer = 0.0f;
 	float enemySpawnInterval = 2.0f;
 	const float enemySpawnIntervalMin = 0.2f;
+
+	//Audio
+	Mix_Chunk* bgm;
+	Mix_Chunk* laserBlast;
+
+	float volumeScale = 0.5f;
+	float baseVolumeLaser = 32.0f;
+	float baseVolumeMusic = 64.0f;
 
 public:
 	Game();
@@ -70,6 +89,8 @@ public:
 	void draw();
 	void quit();
 	void cleanup();
+
+	void setVolume(float a_volumeScale);
 
 	void updatePlayerActions(const float deltaTime);
 	void updateCollisionChecks();

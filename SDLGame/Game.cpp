@@ -41,6 +41,40 @@ int Game::run()
 		return -1;
 	}
 
+	//Setup Mixer for sound
+	int mixInitState = Mix_Init(0);
+	if (mixInitState != 0)
+	{
+		printf("Mix Init encountered an error: %s\n", Mix_GetError());
+	}
+	else
+	{
+		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 1, 2048)!=0)
+		{
+			printf("Mix Open Audio encountered an error: %s\n", Mix_GetError());
+		}
+	}
+
+	const char* filePathBGM = "Assets/Sound/bgm.wav";
+	
+	//Load Audio
+	bgm = Mix_LoadWAV("Assets/Sound/bgm.wav");
+	if (bgm == NULL)
+	{
+		printf("LoadWav for %s encountered an error: %s\n", filePathBGM , Mix_GetError());
+	}
+	Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
+	Mix_Volume((int)AudioChannel::MUSIC, 64);
+
+	const char* filePathLaser = "Assets/Sounds/laser1.wav";
+
+	laserBlast = Mix_LoadWAV(filePathLaser);
+	if (laserBlast == NULL)
+	{
+		printf("LoadWav for %s encountered an error: %s\n", filePathLaser, Mix_GetError());
+	}
+	setVolume(volumeScale);
+
 	myShip = Sprite(pRenderer, "Assets/Spaceship_tut.png");
 	myShip.setPosition(windowSizeX/2 - myShip.getSize().x*0.5, windowSizeY - myShip.getSize().y);
 	myShip.tag = SpriteTag::PLAYER;
@@ -92,6 +126,12 @@ void Game::input()
 		{
 			switch (lastEvent.key.keysym.sym)
 			{
+			/*case(SDLK_UP):
+				setVolume(volumeScale + volumeStep);
+				break;
+			case(SDLK_DOWN):
+				setVolume(volumeScale - volumeStep);
+				break;*/
 			case(SDLK_SPACE):
 				isShootPressed = true;
 				break;
@@ -302,6 +342,9 @@ void Game::updatePlayerActions(const float deltaTime)
 	{
 		if (timeBeforeNextShot <= 0.0f)
 		{
+			//Shoot!
+			Mix_PlayChannel((int)AudioChannel::LASER_BLAST, laserBlast, 0);
+			
 			int projectilesPerShot = 3;
 			float spread = 1.0f;
 			float bulletSpeed = 400.0f;
@@ -382,29 +425,30 @@ void Game::updateCollisionChecks()
 					pSpriteA->isMarkedForDeletion = true;
 					pSpriteB->isMarkedForDeletion = true;
 				}
-				if (pSpriteA->tag == SpriteTag::PLAYER && pSpriteB->tag == SpriteTag::ENEMY_BULLET ||
+				/*if (pSpriteA->tag == SpriteTag::PLAYER && pSpriteB->tag == SpriteTag::ENEMY_BULLET ||
 					pSpriteA->tag == SpriteTag::ENEMY_BULLET && pSpriteB->tag == SpriteTag::PLAYER)
 				{
 					pSpriteA->isMarkedForDeletion = true;
 					pSpriteB->isMarkedForDeletion = true;
-				}
+				}*/
 			}
 		}
 	}
 }
 
 void Game::spawnEnemyBullets(const float deltaTime)
-{	
+{
+	
 	for (int i = 0; i < sprites.size(); i++)
-	{
+	{	
+			
 		Sprite* pSprite = sprites[i];
 		if (pSprite->tag == SpriteTag::OBSTACLE)
-		{
-			if(timeBeforeNextEnemyShot==0.0f)
+		{	
+			timeBeforeNextEnemyShot -= deltaTime;
+			if(timeBeforeNextEnemyShot<=0.0f)
 			{ 
-				/*timeBeforeNextEnemyShot = timeBetweenEnemyShots;*/
-
-				
+				timeBeforeNextEnemyShot = timeBetweenEnemyShots;
 
 					/*std::cout << "shoot!" << std::endl;*/
 					Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
@@ -418,9 +462,9 @@ void Game::spawnEnemyBullets(const float deltaTime)
 					pNewEnemyBullet->position = launchPosition;
 
 					sprites.push_back(pEnemyBulletCastedToSprite);
-				
+
 			}
-		/*	timeBeforeNextEnemyShot -= deltaTime;*/
+			
 		}
 	}
 	
@@ -434,9 +478,9 @@ void Game::spawnEnemy(const float deltaTime)
 	const int NUM_ENEMY_SPRITES = 3;
 	const char* enemySpriteImages[NUM_ENEMY_SPRITES] =
 	{
-		"Assets/SMALLSpaceship_06_RED.png",
-		"Assets/Spaceship_06_RED.png",
-		"Assets/Spaceship_03_RED.png",
+		"Assets/large.ship_.1.png",
+		"Assets/ship7.png",
+		"Assets/part2artship1.png",
 	};
 	const char* spriteToSpawn = enemySpriteImages[rand() % NUM_ENEMY_SPRITES];
 
@@ -482,5 +526,23 @@ void Game::updateBG()
 	{
 		myBackground3.setPosition(0, -myBackground3.getSize().y);
 	}
+}
+
+void Game::setVolume(float a_volumeScale)
+{
+	/*volumeScale = a_volumeScale;
+	if (volumeScale < 0.0f)
+	{
+		volumeScale = 0;
+	}
+	if (volumeScale > 1.0f)
+	{
+		volumeScale = 1.0f;
+	}*/
+
+	/*volumeScale = max(min(a_volumeScale, 1.0, 0.0));*/
+	
+	Mix_Volume((int)AudioChannel::MUSIC, baseVolumeMusic * volumeScale);
+	Mix_Volume((int)AudioChannel::LASER_BLAST, baseVolumeMusic * volumeScale);
 }
 	
