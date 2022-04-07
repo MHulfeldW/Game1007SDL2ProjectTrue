@@ -55,10 +55,10 @@ int Game::run()
 		}
 	}
 
-	const char* filePathBGM = "Assets/Sound/bgm.wav";
+	const char* filePathBGM = "Assets/Sounds/ix.wav";
 	
 	//Load Audio
-	bgm = Mix_LoadWAV("Assets/Sound/bgm.wav");
+	bgm = Mix_LoadWAV(filePathBGM);
 	if (bgm == NULL)
 	{
 		printf("LoadWav for %s encountered an error: %s\n", filePathBGM , Mix_GetError());
