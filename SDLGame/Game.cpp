@@ -63,7 +63,7 @@ int Game::run()
 	{
 		printf("LoadWav for %s encountered an error: %s\n", filePathBGM , Mix_GetError());
 	}
-	Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
+	/*Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);*/
 	Mix_Volume((int)AudioChannel::MUSIC, 64);
 
 	const char* filePathLaser = "Assets/Sounds/laser1.wav";
@@ -75,6 +75,7 @@ int Game::run()
 	}
 	setVolume(volumeScale);
 
+	//Sprites
 	myShip = Sprite(pRenderer, "Assets/Spaceship_tut.png");
 	myShip.setPosition(windowSizeX/2 - myShip.getSize().x*0.5, windowSizeY - myShip.getSize().y);
 	myShip.tag = SpriteTag::PLAYER;
@@ -124,14 +125,17 @@ void Game::input()
 		//Keydown? There are several parts of a button press. pressing down, held, and then letting go
 		if (lastEvent.type == SDL_KEYDOWN)
 		{
+			const float volumeStep = 0.1f;
 			switch (lastEvent.key.keysym.sym)
 			{
-			/*case(SDLK_UP):
+			case(SDLK_UP):
 				setVolume(volumeScale + volumeStep);
+				std::cout << "Pressing up raises volume\n";
 				break;
 			case(SDLK_DOWN):
 				setVolume(volumeScale - volumeStep);
-				break;*/
+				std::cout << "Pressing down lowers volume\n";
+				break;
 			case(SDLK_SPACE):
 				isShootPressed = true;
 				break;
@@ -184,7 +188,7 @@ void Game::update(const float deltaTime)
 
 	if (enemySpawnTimer < 0.0f)
 	{
-		spawnEnemy(deltaTime);
+		/*spawnEnemy(deltaTime);*/
 		enemySpawnTimer = enemySpawnInterval;
 
 		if (enemySpawnInterval > enemySpawnIntervalMin)
@@ -286,6 +290,7 @@ void Game::updatePlayerActions(const float deltaTime)
 	//acceleration = change in velocity over time
 	float acceleration = 3000;
 	float deltaV = acceleration * deltaTime;
+	
 
 	Vector2 inputVector =
 	{
@@ -303,7 +308,19 @@ void Game::updatePlayerActions(const float deltaTime)
 	}
 	if (isDownPressed)
 	{
-		inputVector.y += 1;
+		
+		if (!*pPlay)
+		{
+			Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
+			std::cout << "Pressing s plays loop sound!\n";
+			/*inputVector.y += 1;*/
+			*pPlay = true; 
+		}
+		else 
+		{
+			/*Mix_HaltChannel((int)AudioChannel::MUSIC);*/
+			*pPlay = false;
+		}
 	}
 	if (isLeftPressed)
 	{
@@ -344,6 +361,7 @@ void Game::updatePlayerActions(const float deltaTime)
 		{
 			//Shoot!
 			Mix_PlayChannel((int)AudioChannel::LASER_BLAST, laserBlast, 0);
+			std::cout << "Space plays single sound of laser shooting\n";
 			
 			int projectilesPerShot = 3;
 			float spread = 1.0f;
@@ -530,7 +548,7 @@ void Game::updateBG()
 
 void Game::setVolume(float a_volumeScale)
 {
-	/*volumeScale = a_volumeScale;
+	volumeScale = a_volumeScale;
 	if (volumeScale < 0.0f)
 	{
 		volumeScale = 0;
@@ -538,9 +556,9 @@ void Game::setVolume(float a_volumeScale)
 	if (volumeScale > 1.0f)
 	{
 		volumeScale = 1.0f;
-	}*/
+	}
 
-	/*volumeScale = max(min(a_volumeScale, 1.0, 0.0));*/
+	volumeScale = max(min(volumeScale, 1.0),0.0);
 	
 	Mix_Volume((int)AudioChannel::MUSIC, baseVolumeMusic * volumeScale);
 	Mix_Volume((int)AudioChannel::LASER_BLAST, baseVolumeMusic * volumeScale);

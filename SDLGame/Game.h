@@ -64,6 +64,8 @@ class Game
 	bool isDownPressed	= false;
 	bool isLeftPressed	= false;
 	bool isRightPressed	= false;
+	bool bgmPlaying = false;
+	bool* pPlay = &bgmPlaying;
 
 	bool isShooting = false;
 
