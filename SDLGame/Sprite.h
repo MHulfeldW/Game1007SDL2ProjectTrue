@@ -72,15 +72,7 @@ public:
 	void setPosition(const float x, const float y);
 	void moveBy(const float xOffset, const float yOffset);
 	void setSize(int width, int height);
-	void setSrcX(int x)
-	{
-		src.x = x;
-	}
-	void setSrcW(int w)
-	{
-		src.w = w;
-	}
-	void animate(Sprite obj);
+	void animate(Sprite obj, SDL_Renderer* pRenderer);
 	
 	void update(const float deltaTime);
 	void draw(SDL_Renderer* pRenderer) const; // const after the function says it will not change anything

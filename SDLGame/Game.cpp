@@ -188,7 +188,7 @@ void Game::update(const float deltaTime)
 {
 	updateBG();
 	updateCollisionChecks();
-	mySonic.animate(mySonic);
+	//mySonic.animate(mySonic, pRenderer);
 	
 	/*if(!myShip.isMarkedForDeletion)
 	{*/
@@ -261,7 +261,8 @@ void Game::draw()
 	myBackground.draw(pRenderer);
 	myBackground2.draw(pRenderer);
 	myBackground3.draw(pRenderer);
-	mySonic.draw(pRenderer);
+	//mySonic.draw(pRenderer);
+	mySonic.animate(mySonic, pRenderer);
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		sprites[i]->draw(pRenderer);
