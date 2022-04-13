@@ -190,6 +190,8 @@ void Game::update(const float deltaTime)
 	updateCollisionChecks();
 	mySonic.animate(mySonic);
 	
+	/*if(!myShip.isMarkedForDeletion)
+	{*/
 	//Every t seconds, spawn an asteroid
 	enemySpawnTimer -= deltaTime;
 
@@ -203,7 +205,7 @@ void Game::update(const float deltaTime)
 			enemySpawnInterval -= 0.1;
 		}
 	}
-
+    /*}*/
 	updatePlayerActions(deltaTime);
 
 	for (int i = 0; i < sprites.size(); i++)
@@ -315,20 +317,27 @@ void Game::updatePlayerActions(const float deltaTime)
 	{
 		inputVector.x += 1;
 	}
+	soundTimer -= deltaTime;
 	if (isDownPressed)
 	{
 		inputVector.y += 1;
-		if (Mix_Playing((int)AudioChannel::MUSIC==1))
+		if (soundTimer <= 0.0f)
 		{
-			
-			Mix_HaltChannel((int)AudioChannel::MUSIC);
-			std::cout << "Loop stopped\n";
-			
-		}
-		else 
-		{
-			Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
-			std::cout << "Pressing s plays loop sound!\n";
+
+
+			if (Mix_Playing((int)AudioChannel::MUSIC == 1))
+			{
+
+				Mix_HaltChannel((int)AudioChannel::MUSIC);
+				std::cout << "Loop stopped\n";
+
+			}
+			else
+			{
+				Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
+				std::cout << "Pressing s plays loop sound!\n";
+			}
+			soundTimer = timeBetweenSound;
 		}
 	}
 	if (isLeftPressed)

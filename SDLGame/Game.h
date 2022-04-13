@@ -57,6 +57,8 @@ class Game
 	float timeBeforeNextShot = 0.0f; // this will tick down
 	const float timeBetweenEnemyShots = 0.72f;
 	float timeBeforeNextEnemyShot = 0.0f;
+	const float timeBetweenSound = 0.72f;
+	float soundTimer = 0.0f;
 
 	float gameTime = 0.0f; // seconds since start of game
 	float fixedDeltaTime = 0.016f; // time between frames 0.016 == 1/60
