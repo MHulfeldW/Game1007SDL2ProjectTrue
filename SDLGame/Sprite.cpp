@@ -45,6 +45,8 @@ void Sprite::setSize(int width, int height)
 	dst.h = height;
 }
 
+
+
 void Sprite::update(const float deltaTime)
 {
 	//Displacement is a change in position
@@ -111,3 +113,20 @@ void Sprite::cleanup()
 {
 	SDL_DestroyTexture(pTexture);
 }
+void Sprite::animate(Sprite obj)
+{	
+	obj.dst.x = 128;
+	if (m_iFrame == m_iFrameMax)
+	{
+		m_iFrame = 0;
+		m_iSprite++;
+		if (m_iSprite == m_iSpriteMax)
+		{
+			m_iSprite = 0;
+		}
+		obj.src.x = m_iSprite * obj.src.w;
+		
+	}
+	m_iFrame++;
+}
+

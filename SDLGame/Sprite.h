@@ -44,6 +44,10 @@ private:
 	SDL_Texture* pTexture;
 	SDL_Rect src; // source rectangle for rendering. Represents the part of the texture to draw when rendering this sprite
 	SDL_Rect dst; // destination rectangle for rendering. Represents where the sprite will be drawn on-screen, and how big it will be when drawn
+	int m_iFrame = 0,
+		m_iFrameMax = 4,
+		m_iSprite = 0,
+		m_iSpriteMax = 8;
 
 public:
 	bool isMarkedForDeletion = false;
@@ -68,6 +72,15 @@ public:
 	void setPosition(const float x, const float y);
 	void moveBy(const float xOffset, const float yOffset);
 	void setSize(int width, int height);
+	void setSrcX(int x)
+	{
+		src.x = x;
+	}
+	void setSrcW(int w)
+	{
+		src.w = w;
+	}
+	void animate(Sprite obj);
 	
 	void update(const float deltaTime);
 	void draw(SDL_Renderer* pRenderer) const; // const after the function says it will not change anything

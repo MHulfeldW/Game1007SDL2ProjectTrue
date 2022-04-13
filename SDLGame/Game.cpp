@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Bullet.h"
 #include "Enemy_Bullet.h"
+#include "Animation.h"
 
 Game::Game()
 {
@@ -90,6 +91,12 @@ int Game::run()
 	myBackground3 = Sprite(pRenderer, "Assets/corona_up.png");
 	myBackground3.setSize(windowSizeX, windowSizeY);
 	myBackground3.setPosition(0, -myBackground2.getSize().y * 2);
+
+	mySonic = Sprite(pRenderer, "Assets/SonicTheHedgehog.png");
+	//mySonic.setPosition(0, 0);
+	////mySonic.setSrcX(0);
+	////mySonic.setSrcW(128);
+	////mySonic.setSize(128, 128);
 	
 
 
@@ -181,14 +188,14 @@ void Game::update(const float deltaTime)
 {
 	updateBG();
 	updateCollisionChecks();
-	
+	mySonic.animate(mySonic);
 	
 	//Every t seconds, spawn an asteroid
 	enemySpawnTimer -= deltaTime;
 
 	if (enemySpawnTimer < 0.0f)
 	{
-		/*spawnEnemy(deltaTime);*/
+		spawnEnemy(deltaTime);
 		enemySpawnTimer = enemySpawnInterval;
 
 		if (enemySpawnInterval > enemySpawnIntervalMin)
@@ -252,6 +259,7 @@ void Game::draw()
 	myBackground.draw(pRenderer);
 	myBackground2.draw(pRenderer);
 	myBackground3.draw(pRenderer);
+	mySonic.draw(pRenderer);
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		sprites[i]->draw(pRenderer);
@@ -281,6 +289,7 @@ void Game::cleanup()
 	myBackground.cleanup();
 	myBackground2.cleanup();
 	myBackground3.cleanup();
+	mySonic.cleanup();
 }
 
 
@@ -308,18 +317,18 @@ void Game::updatePlayerActions(const float deltaTime)
 	}
 	if (isDownPressed)
 	{
-		
-		if (!*pPlay)
+		inputVector.y += 1;
+		if (Mix_Playing((int)AudioChannel::MUSIC==1))
 		{
-			Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
-			std::cout << "Pressing s plays loop sound!\n";
-			/*inputVector.y += 1;*/
-			*pPlay = true; 
+			
+			Mix_HaltChannel((int)AudioChannel::MUSIC);
+			std::cout << "Loop stopped\n";
+			
 		}
 		else 
 		{
-			/*Mix_HaltChannel((int)AudioChannel::MUSIC);*/
-			*pPlay = false;
+			Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
+			std::cout << "Pressing s plays loop sound!\n";
 		}
 	}
 	if (isLeftPressed)

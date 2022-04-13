@@ -26,6 +26,7 @@
 #include <vector>
 #include <SDL_mixer.h>
 #include <minmax.h>
+#include "Animation.h"
 
 enum class AudioChannel
 {
@@ -49,6 +50,7 @@ class Game
 	Sprite myBackground;
 	Sprite myBackground2;
 	Sprite myBackground3;
+	Sprite mySonic;
 	std::vector<Sprite*> sprites;
 
 	const float timeBetweenShots = 0.25f; // this represents fire rate (1/fire rate to be exact)

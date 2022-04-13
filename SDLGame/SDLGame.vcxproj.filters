@@ -26,6 +26,9 @@
     <ClCompile Include="Enemy_Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sprite.h">
@@ -41,5 +44,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy_Bullet.h" />
+    <ClInclude Include="Animation.h" />
   </ItemGroup>
 </Project>
