@@ -47,7 +47,7 @@ private:
 	int m_iFrame = 0,
 		m_iFrameMax = 4,
 		m_iSprite = 0,
-		m_iSpriteMax = 8;
+		m_iSpriteMax = 11;
 
 public:
 	bool isMarkedForDeletion = false;
@@ -72,7 +72,7 @@ public:
 	void setPosition(const float x, const float y);
 	void moveBy(const float xOffset, const float yOffset);
 	void setSize(int width, int height);
-	void animate(Sprite obj, SDL_Renderer* pRenderer);
+	void animate(Sprite obj, Sprite obj2, SDL_Renderer* pRenderer);
 	
 	void update(const float deltaTime);
 	void draw(SDL_Renderer* pRenderer) const; // const after the function says it will not change anything

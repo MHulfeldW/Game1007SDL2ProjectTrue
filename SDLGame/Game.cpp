@@ -64,7 +64,7 @@ int Game::run()
 	{
 		printf("LoadWav for %s encountered an error: %s\n", filePathBGM , Mix_GetError());
 	}
-	/*Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);*/
+	Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
 	Mix_Volume((int)AudioChannel::MUSIC, 64);
 
 	const char* filePathLaser = "Assets/Sounds/laser1.wav";
@@ -92,11 +92,9 @@ int Game::run()
 	myBackground3.setSize(windowSizeX, windowSizeY);
 	myBackground3.setPosition(0, -myBackground2.getSize().y * 2);
 
-	mySonic = Sprite(pRenderer, "Assets/SonicTheHedgehog.png");
-	//mySonic.setPosition(0, 0);
-	////mySonic.setSrcX(0);
-	////mySonic.setSrcW(128);
-	////mySonic.setSize(128, 128);
+	myExplosion = Sprite(pRenderer, "Assets/explosion.png");
+	//mySpritesheet = Sprite(pRenderer, "Assets/explosion.png");
+	//mySpritesheet.setPosition(0,128);
 	
 
 
@@ -188,7 +186,7 @@ void Game::update(const float deltaTime)
 {
 	updateBG();
 	updateCollisionChecks();
-	//mySonic.animate(mySonic, pRenderer);
+	
 	
 	/*if(!myShip.isMarkedForDeletion)
 	{*/
@@ -205,7 +203,7 @@ void Game::update(const float deltaTime)
 			enemySpawnInterval -= 0.1;
 		}
 	}
-    /*}*/
+    
 	updatePlayerActions(deltaTime);
 
 	for (int i = 0; i < sprites.size(); i++)
@@ -261,11 +259,24 @@ void Game::draw()
 	myBackground.draw(pRenderer);
 	myBackground2.draw(pRenderer);
 	myBackground3.draw(pRenderer);
-	//mySonic.draw(pRenderer);
-	mySonic.animate(mySonic, pRenderer);
+	//myExplosion.animate(myExplosion, pRenderer);
+	//mySpritesheet.draw(pRenderer);
+	//myExplosion.animate(myExplosion, pRenderer);
+	
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		sprites[i]->draw(pRenderer);
+	}
+	for (int i = 0; i < sprites.size(); i++)
+	{ 	
+		Sprite* pSprite = sprites[i];
+		
+		
+		
+		if (pSprite->isMarkedForDeletion && pSprite->tag == SpriteTag::OBSTACLE)
+		{
+			myExplosion.animate(myExplosion, *pSprite, pRenderer);
+		}
 	}
 	myShip.draw(pRenderer);
 
@@ -292,7 +303,8 @@ void Game::cleanup()
 	myBackground.cleanup();
 	myBackground2.cleanup();
 	myBackground3.cleanup();
-	mySonic.cleanup();
+	myExplosion.cleanup();
+	//mySpritesheet.cleanup();
 }
 
 
@@ -322,7 +334,7 @@ void Game::updatePlayerActions(const float deltaTime)
 	if (isDownPressed)
 	{
 		inputVector.y += 1;
-		if (soundTimer <= 0.0f)
+		/*if (soundTimer <= 0.0f)
 		{
 
 
@@ -330,16 +342,16 @@ void Game::updatePlayerActions(const float deltaTime)
 			{
 
 				Mix_HaltChannel((int)AudioChannel::MUSIC);
-				std::cout << "Loop stopped\n";
+				std::cout << "Loop stopped with 's'\n";
 
 			}
 			else
 			{
 				Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
-				std::cout << "Pressing s plays loop sound!\n";
+				std::cout << "Pressing 's' plays loop sound!\n";
 			}
 			soundTimer = timeBetweenSound;
-		}
+		}*/
 	}
 	if (isLeftPressed)
 	{
@@ -461,6 +473,7 @@ void Game::updateCollisionChecks()
 				{
 					pSpriteA->isMarkedForDeletion = true;
 					pSpriteB->isMarkedForDeletion = true;
+					
 				}
 				/*if (pSpriteA->tag == SpriteTag::PLAYER && pSpriteB->tag == SpriteTag::ENEMY_BULLET ||
 					pSpriteA->tag == SpriteTag::ENEMY_BULLET && pSpriteB->tag == SpriteTag::PLAYER)

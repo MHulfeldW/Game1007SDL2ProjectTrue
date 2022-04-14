@@ -50,7 +50,8 @@ class Game
 	Sprite myBackground;
 	Sprite myBackground2;
 	Sprite myBackground3;
-	Sprite mySonic;
+	Sprite myExplosion;
+	//Sprite mySpritesheet;
 	std::vector<Sprite*> sprites;
 
 	const float timeBetweenShots = 0.25f; // this represents fire rate (1/fire rate to be exact)

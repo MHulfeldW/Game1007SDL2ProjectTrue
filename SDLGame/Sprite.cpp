@@ -113,10 +113,13 @@ void Sprite::cleanup()
 {
 	SDL_DestroyTexture(pTexture);
 }
-void Sprite::animate(Sprite obj, SDL_Renderer* pRenderer)
+void Sprite::animate(Sprite obj, Sprite obj2, SDL_Renderer* pRenderer)
 {	
 	obj.src.w = obj.src.h;
-	obj.dst.w = obj.src.h;
+	obj.dst.w = obj2.src.w;
+	obj.dst.h = obj2.src.h;
+	obj.dst.x = obj2.dst.x;
+	obj.dst.y = obj2.dst.y;
 	
 	if (m_iFrame == m_iFrameMax)
 	{
