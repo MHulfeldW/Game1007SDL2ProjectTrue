@@ -125,10 +125,10 @@ void Sprite::animate(Sprite obj, Sprite obj2, SDL_Renderer* pRenderer)
 	{
 		m_iFrame = 0;
 		m_iSprite++;
-		if (m_iSprite == m_iSpriteMax)
+	/*	if (m_iSprite == m_iSpriteMax)
 		{
 			m_iSprite = 0;
-		}		
+		}	*/	
 	}
 	obj.src.x = m_iSprite * obj.src.w;
 	m_iFrame++;

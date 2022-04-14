@@ -185,24 +185,25 @@ void Game::input()
 void Game::update(const float deltaTime)
 {
 	updateBG();
-	updateCollisionChecks();
+	updateCollisionChecks(deltaTime);
 	
 	
-	/*if(!myShip.isMarkedForDeletion)
-	{*/
-	//Every t seconds, spawn an asteroid
-	enemySpawnTimer -= deltaTime;
+		enemySpawnTimer -= deltaTime;
 
-	if (enemySpawnTimer < 0.0f)
-	{
-		spawnEnemy(deltaTime);
-		enemySpawnTimer = enemySpawnInterval;
-
-		if (enemySpawnInterval > enemySpawnIntervalMin)
+		if (enemySpawnTimer < 0.0f)
 		{
-			enemySpawnInterval -= 0.1;
+			if (!myShip.isMarkedForDeletion)
+			{
+				//Every t seconds, spawn an asteroid
+				spawnEnemy(deltaTime);
+			}
+			enemySpawnTimer = enemySpawnInterval;
+
+			if (enemySpawnInterval > enemySpawnIntervalMin)
+			{
+				enemySpawnInterval -= 0.1;
+			}
 		}
-	}
     
 	updatePlayerActions(deltaTime);
 
@@ -233,6 +234,7 @@ void Game::update(const float deltaTime)
 		// i.e. a->b is equivalent to (*a).b
 		if ((*pSprite).isMarkedForDeletion)
 		{
+			myExplosion.animate(myExplosion, *pSprite, pRenderer);
 			//clear the memory from the image of the sprite!
 			pSprite->cleanup();
 			// destroy it!
@@ -270,9 +272,7 @@ void Game::draw()
 	for (int i = 0; i < sprites.size(); i++)
 	{ 	
 		Sprite* pSprite = sprites[i];
-		
-		
-		
+		myExplosion.animate(myExplosion, *pSprite, pRenderer);
 		if (pSprite->isMarkedForDeletion && pSprite->tag == SpriteTag::OBSTACLE)
 		{
 			myExplosion.animate(myExplosion, *pSprite, pRenderer);
@@ -330,7 +330,7 @@ void Game::updatePlayerActions(const float deltaTime)
 	{
 		inputVector.x += 1;
 	}
-	soundTimer -= deltaTime;
+	/*soundTimer -= deltaTime;*/
 	if (isDownPressed)
 	{
 		inputVector.y += 1;
@@ -443,18 +443,37 @@ void Game::updatePlayerActions(const float deltaTime)
 
 }
 
-void Game::updateCollisionChecks()
+void Game::updateCollisionChecks(const float deltaTime)
 {
+	deathTimer -= deltaTime;
+	if (deathTimer <= 0.0f)
+	{
+		myShip.isMarkedForDeletion = false;
+		std::cout << "Fixed!" << std::endl;
+	}
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		Sprite* pSprite = sprites[i];
 		if (pSprite->tag == SpriteTag::OBSTACLE ||pSprite->tag==SpriteTag::ENEMY_BULLET) //Player should only be deleted if touching bullet or enemies
-		{
+		{	
+			
 			if (myShip.isCollidingWith(pSprite))
 			{
-				myShip.isMarkedForDeletion = true;
+			
+				if(!myShip.isMarkedForDeletion)
+				{ 
+					myShip.isMarkedForDeletion = true;
+					std::cout << "Game Over!" << std::endl;
+					deathTimer = timeBetweenDeath;
+					for (int i = 0; i < sprites.size(); i++)
+					{
+						sprites[i]->cleanup();
+					
+					}
+				}
+				
 				pSprite->isMarkedForDeletion = true;
-				std::cout << "Game Over!" << std::endl;
+				
 			}
 		}
 	}
@@ -496,7 +515,7 @@ void Game::spawnEnemyBullets(const float deltaTime)
 		if (pSprite->tag == SpriteTag::OBSTACLE)
 		{	
 			timeBeforeNextEnemyShot -= deltaTime;
-			if(timeBeforeNextEnemyShot<=0.0f)
+			if(timeBeforeNextEnemyShot<=0.0f && !myShip.isMarkedForDeletion)
 			{ 
 				timeBeforeNextEnemyShot = timeBetweenEnemyShots;
 
