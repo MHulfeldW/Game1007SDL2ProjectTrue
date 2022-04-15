@@ -4,6 +4,7 @@
 #include "Bullet.h"
 #include "Enemy_Bullet.h"
 #include "Animation.h"
+#include "Boss.h"
 
 Game::Game()
 {
@@ -93,10 +94,18 @@ int Game::run()
 	myBackground3.setPosition(0, -myBackground2.getSize().y * 2);
 
 	myExplosion = Sprite(pRenderer, "Assets/explosion.png");
-	//mySpritesheet = Sprite(pRenderer, "Assets/explosion.png");
-	//mySpritesheet.setPosition(0,128);
-	
+	youLose = Sprite(pRenderer, "Assets/Game_Over.png");
 
+
+
+	//boss = Sprite(pRenderer, "Assets/Lasers/large.ship_.1.png");
+	//boss.setPosition(windowSizeX / 2 - boss.getSize().x * 0.5, windowSizeY - boss.getSize().y);
+
+	//Boss* bigGuy = new Boss(pRenderer);
+	//bigGuy->setPosition(400 - (bigGuy->getSize().x / 2), 450 - (bigGuy->getSize().y / 2));
+	//
+	/*Boss* bigGuy = new Boss(pRenderer);
+	Sprite* pbigGuy = (Sprite*)bigGuy;*/
 
 	bIsRunning = true;
 
@@ -184,6 +193,9 @@ void Game::input()
 
 void Game::update(const float deltaTime)
 {
+	
+	bool* pBossSpawn = &bossSpawned;
+	
 	updateBG();
 	updateCollisionChecks(deltaTime);
 	
@@ -195,7 +207,8 @@ void Game::update(const float deltaTime)
 			if (!myShip.isMarkedForDeletion)
 			{
 				//Every t seconds, spawn an asteroid
-				spawnEnemy(deltaTime);
+			/*	spawnEnemy(deltaTime);*/;
+				
 			}
 			enemySpawnTimer = enemySpawnInterval;
 
@@ -204,8 +217,14 @@ void Game::update(const float deltaTime)
 				enemySpawnInterval -= 0.1;
 			}
 		}
-    
+  
 	updatePlayerActions(deltaTime);
+	if (!*pBossSpawn )
+	{
+		updateBoss();
+		*pBossSpawn = true;
+	}
+
 
 	for (int i = 0; i < sprites.size(); i++)
 	{
@@ -261,9 +280,12 @@ void Game::draw()
 	myBackground.draw(pRenderer);
 	myBackground2.draw(pRenderer);
 	myBackground3.draw(pRenderer);
-	//myExplosion.animate(myExplosion, pRenderer);
-	//mySpritesheet.draw(pRenderer);
-	//myExplosion.animate(myExplosion, pRenderer);
+
+	if (myShip.isMarkedForDeletion)
+	{
+		youLose.draw(pRenderer);
+		youLose.setPosition(windowSizeX / 2 - youLose.getSize().x / 2, windowSizeY / 2 - youLose.getSize().y / 2);
+	}
 	
 	for (int i = 0; i < sprites.size(); i++)
 	{
@@ -275,9 +297,12 @@ void Game::draw()
 		myExplosion.animate(myExplosion, *pSprite, pRenderer);
 		if (pSprite->isMarkedForDeletion && pSprite->tag == SpriteTag::OBSTACLE)
 		{
-			myExplosion.animate(myExplosion, *pSprite, pRenderer);
+			/*myExplosion.animate(myExplosion, *pSprite, pRenderer);*/
 		}
 	}
+
+
+	
 	myShip.draw(pRenderer);
 
 	SDL_RenderPresent(pRenderer); // Make updated canvas visible on screen
@@ -547,9 +572,9 @@ void Game::spawnEnemy(const float deltaTime)
 	const int NUM_ENEMY_SPRITES = 3;
 	const char* enemySpriteImages[NUM_ENEMY_SPRITES] =
 	{
-		"Assets/large.ship_.1.png",
-		"Assets/ship7.png",
-		"Assets/part2artship1.png",
+		"Assets/Boss.png",
+		"Assets/ship6.png",
+		"Assets/ship2.png",
 	};
 	const char* spriteToSpawn = enemySpriteImages[rand() % NUM_ENEMY_SPRITES];
 
@@ -613,5 +638,24 @@ void Game::setVolume(float a_volumeScale)
 	
 	Mix_Volume((int)AudioChannel::MUSIC, baseVolumeMusic * volumeScale);
 	Mix_Volume((int)AudioChannel::LASER_BLAST, baseVolumeMusic * volumeScale);
+}
+
+void Game::updateBoss()
+{
+	
+		int startVelocity = 200;
+		Sprite* pBoss = new Sprite(pRenderer, "Assets/Boss.png");
+	
+		Vector2 size = pBoss->getSize();
+	
+		Vector2 spawnPosition = Vector2{float(windowSizeX/2 - ((int)size.x/2)),-size.y};
+		pBoss->position = spawnPosition;
+
+		Vector2 spawnVelocity = Vector2{ 0,float(startVelocity)};
+		pBoss->velocity = spawnVelocity;
+
+		sprites.push_back(pBoss);
+	
+	
 }
 	

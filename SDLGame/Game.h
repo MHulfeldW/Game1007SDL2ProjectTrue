@@ -51,6 +51,9 @@ class Game
 	Sprite myBackground2;
 	Sprite myBackground3;
 	Sprite myExplosion;
+	Sprite youLose;
+	Sprite boss;
+
 	//Sprite mySpritesheet;
 	std::vector<Sprite*> sprites;
 
@@ -74,6 +77,7 @@ class Game
 	bool isRightPressed	= false;
 	bool bgmPlaying = false;
 	bool* pPlay = &bgmPlaying;
+	bool bossSpawned = false;
 
 	bool isShooting = false;
 
@@ -106,6 +110,7 @@ public:
 	void updateCollisionChecks(const float deltaTime);
 	void spawnEnemyBullets(const float deltaTime);
 	void spawnEnemy(const float deltaTime);
+	void updateBoss();
 	void updateBG();
 };
 

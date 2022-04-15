@@ -29,6 +29,9 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sprite.h">
@@ -45,5 +48,6 @@
     </ClInclude>
     <ClInclude Include="Enemy_Bullet.h" />
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="Boss.h" />
   </ItemGroup>
 </Project>

@@ -35,7 +35,8 @@ enum class SpriteTag
 	ENEMY,
 	ENEMY_BULLET,
 	OBSTACLE,
-	BULLET
+	BULLET,
+	BOSS
 };
 
 class Sprite
