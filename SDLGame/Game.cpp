@@ -75,6 +75,11 @@ int Game::run()
 	{
 		printf("LoadWav for %s encountered an error: %s\n", filePathLaser, Mix_GetError());
 	}
+
+	const char* filePathExplosion = "Assets/Sounds/explosion01.wav";
+	explosion = Mix_LoadWAV(filePathExplosion);
+	const char* filePathAlert = "Assets/Sounds/alert-normal.wav";
+	alert = Mix_LoadWAV(filePathAlert);
 	setVolume(volumeScale);
 
 	//Sprites
@@ -95,17 +100,8 @@ int Game::run()
 
 	myExplosion = Sprite(pRenderer, "Assets/explosion.png");
 	youLose = Sprite(pRenderer, "Assets/Game_Over.png");
+	youWin = Sprite(pRenderer, "Assets/You_Win.png");
 
-
-
-	//boss = Sprite(pRenderer, "Assets/Lasers/large.ship_.1.png");
-	//boss.setPosition(windowSizeX / 2 - boss.getSize().x * 0.5, windowSizeY - boss.getSize().y);
-
-	//Boss* bigGuy = new Boss(pRenderer);
-	//bigGuy->setPosition(400 - (bigGuy->getSize().x / 2), 450 - (bigGuy->getSize().y / 2));
-	//
-	/*Boss* bigGuy = new Boss(pRenderer);
-	Sprite* pbigGuy = (Sprite*)bigGuy;*/
 
 	bIsRunning = true;
 
@@ -205,7 +201,10 @@ void Game::update(const float deltaTime)
 	countdown += deltaTime;
 	if (countdown < timeForBoss)
 	{
-
+		if (myShip.isMarkedForDeletion)
+		{
+			enemySpawnInterval = 2.0f;
+		}
 		enemySpawnTimer -= deltaTime;
 
 		if (enemySpawnTimer < 0.0f)
@@ -226,31 +225,41 @@ void Game::update(const float deltaTime)
 	}
   
 	updatePlayerActions(deltaTime);
-	if(countdown > timeForBoss + 2.0f)
+	if(countdown >= timeForBoss + 2.0f)
 	{ 
-		if (myShip.isMarkedForDeletion)
+	
+		if (*pBossSpawn==false)
 		{
-			*pBossSpawn = false;
-		}
-		if (!*pBossSpawn )
-		{
+			Mix_PlayChannel((int)AudioChannel::ALERT, alert, 0);
 			updateBoss();
 			*pBossSpawn = true;
+			
 		}
-		
-	}
-	/*for (int i = 0; i < sprites.size(); i++)
+		spawnBossBullets(deltaTime);
+	}	
+	if (myShip.isMarkedForDeletion)
 	{
-		Sprite* pSprite = sprites[i];
-		pSprite->animate(myExplosion,*pSprite);
-	}*/
+		for (int i = 0; i < sprites.size(); i++)
+		{
+			Sprite* pSprite = sprites[i];
+
+			
+			if (pSprite->tag == SpriteTag::BOSS)
+			{
+				pSprite->isMarkedForDeletion;
+			}
+		}
+		*pBossSpawn = false;
+	}
+		
+	
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		Sprite* pSprite = sprites[i];
 	
-		if (pSprite->position.y >= windowSizeY/2 - pSprite->getSize().y && pSprite->tag == SpriteTag::BOSS)
+		if (pSprite->position.y >= windowSizeY/3 - pSprite->getSize().y && pSprite->tag == SpriteTag::BOSS)
 		{
-			pSprite->position.y = windowSizeY /2 - pSprite->getSize().y;
+			pSprite->position.y = windowSizeY /3 - pSprite->getSize().y;
 			int* pOffset = &xOffset;
 			
 			
@@ -332,15 +341,7 @@ void Game::draw()
 	{
 		sprites[i]->draw(pRenderer);
 	}
-	for (int i = 0; i < sprites.size(); i++)
-	{ 	
-		Sprite* pSprite = sprites[i];
-		/*myExplosion.animate(myExplosion, *pSprite, deathLoc pRenderer);*/
-		if (pSprite->isMarkedForDeletion && pSprite->tag == SpriteTag::OBSTACLE)
-		{
-			myExplosion.draw(pRenderer);
-		}
-	}
+
 
 
 	
@@ -464,7 +465,7 @@ void Game::updatePlayerActions(const float deltaTime)
 				};
 
 				pNewBullet->position = launchPosition;
-				pNewBullet->velocity = launchVelocity;
+				/*pNewBullet->velocity = launchVelocity;*/
 
 				sprites.push_back(pBulletCastedToSprite);
 			}
@@ -503,7 +504,7 @@ void Game::updateCollisionChecks(const float deltaTime)
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		Sprite* pSprite = sprites[i];
-		if (pSprite->tag == SpriteTag::OBSTACLE ||pSprite->tag==SpriteTag::ENEMY_BULLET) //Player should only be deleted if touching bullet or enemies
+		if (pSprite->tag == SpriteTag::OBSTACLE ||pSprite->tag==SpriteTag::ENEMY_BULLET || pSprite->tag==SpriteTag::BOSS) //Player should only be deleted if touching bullet or enemies
 		{	
 			
 			if (myShip.isCollidingWith(pSprite))
@@ -516,6 +517,7 @@ void Game::updateCollisionChecks(const float deltaTime)
 					//On death we clean the screen to set the game to the default state
 					for (int i = 0; i < sprites.size(); i++)
 					{
+						sprites[i]->isMarkedForDeletion;
 						sprites[i]->cleanup();
 					
 					}
@@ -542,15 +544,50 @@ void Game::updateCollisionChecks(const float deltaTime)
 					
 					pSpriteA->isMarkedForDeletion = true;
 					pSpriteB->isMarkedForDeletion = true; 
-					
-					
+					if(pSpriteA->tag == SpriteTag::OBSTACLE || pSpriteB->tag == SpriteTag::OBSTACLE 
+					)
+					{ 
+						Mix_PlayChannel((int)AudioChannel::EXPLOSION, explosion, 0);
+						Mix_Volume((int)AudioChannel::EXPLOSION, 22);
+					}
 				}
-				/*if (pSpriteA->tag == SpriteTag::PLAYER && pSpriteB->tag == SpriteTag::ENEMY_BULLET ||
-					pSpriteA->tag == SpriteTag::ENEMY_BULLET && pSpriteB->tag == SpriteTag::PLAYER)
+				if (pSpriteA->tag == SpriteTag::BOSS && pSpriteB->tag == SpriteTag::BULLET ||
+					pSpriteA->tag == SpriteTag::BULLET && pSpriteB->tag == SpriteTag::BOSS)
 				{
-					pSpriteA->isMarkedForDeletion = true;
-					pSpriteB->isMarkedForDeletion = true;
-				}*/
+					Mix_PlayChannel((int)AudioChannel::EXPLOSION, explosion, 0);
+					Mix_Volume((int)AudioChannel::EXPLOSION, 22);
+					
+					*pBossHit++;
+				/*	if (pSpriteA->tag == SpriteTag::BULLET)
+					{*/
+						pSpriteA->isMarkedForDeletion = true;
+				/*	}*/
+					/*if (pSpriteB->tag == SpriteTag::BULLET)
+					{*/
+						pSpriteB->isMarkedForDeletion = true;
+					/*}*/
+					
+					/*if (*pBossHit >= 3)
+					{
+						
+						if (pSpriteA->tag == SpriteTag::BOSS)
+						{
+							pSpriteA->isMarkedForDeletion = true;
+							Mix_PlayChannel((int)AudioChannel::EXPLOSION, explosion, 0);
+							Mix_Volume((int)AudioChannel::EXPLOSION, 22);
+							*pBossHit = 0;
+						}
+						if (pSpriteB->tag == SpriteTag::BOSS)
+						{
+							pSpriteB->isMarkedForDeletion = true;
+							Mix_PlayChannel((int)AudioChannel::EXPLOSION, explosion, 0);
+							Mix_Volume((int)AudioChannel::EXPLOSION, 22);
+							*pBossHit = 0;
+						}
+					
+					}*/
+				}
+				
 			}
 		}
 	}
@@ -566,11 +603,12 @@ void Game::spawnEnemyBullets(const float deltaTime)
 		if (pSprite->tag == SpriteTag::OBSTACLE)
 		{	
 			timeBeforeNextEnemyShot -= deltaTime;
-			if(timeBeforeNextEnemyShot<=0.0f && !myShip.isMarkedForDeletion)
+			if(timeBeforeNextEnemyShot<=0.0f && !pSprite->isMarkedForDeletion)
 			{ 
 				timeBeforeNextEnemyShot = timeBetweenEnemyShots;
 
-					/*std::cout << "shoot!" << std::endl;*/
+
+					Mix_PlayChannel((int)AudioChannel::LASER_BLAST, laserBlast, 0);
 					Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
 					// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
 					Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
@@ -600,7 +638,7 @@ void Game::spawnEnemy(const float deltaTime)
 	{
 		"Assets/small.drone_.1.png",
 		"Assets/part2artship1.png",
-		"Assets/ship2.png",
+		"Assets/ship7.png",
 	};
 	const char* spriteToSpawn = enemySpriteImages[rand() % NUM_ENEMY_SPRITES];
 
@@ -664,6 +702,50 @@ void Game::setVolume(float a_volumeScale)
 	
 	Mix_Volume((int)AudioChannel::MUSIC, baseVolumeMusic * volumeScale);
 	Mix_Volume((int)AudioChannel::LASER_BLAST, baseVolumeMusic * volumeScale);
+}
+
+void Game::spawnBossBullets(const float deltaTime)
+{
+	for (int i = 0; i < sprites.size(); i++)
+	{
+
+		Sprite* pSprite = sprites[i];
+		if (pSprite->tag == SpriteTag::BOSS)
+		{
+			timeBeforeNextBossShot -= deltaTime;
+			if (timeBeforeNextBossShot <= 0.0f && !myShip.isMarkedForDeletion)
+			{
+				timeBeforeNextBossShot = timeBetweenBossShots;
+				int projectilesPerShot = 3;
+				float spread = 1.0f;
+				float bulletSpeed = 400.0f;
+				for (int i = 0; i < projectilesPerShot; i++)
+				{
+					float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
+
+					Mix_PlayChannel((int)AudioChannel::LASER_BLAST, laserBlast, 0);
+					Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
+					// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
+					Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer
+
+					Vector2 launchPosition = Vector2{ pSprite->position.x + (pSprite->getSize().x * 0.5f) - (pNewEnemyBullet->getSize().x * 0.5f),
+															pSprite->position.y + pSprite->getSize().y
+					};
+					Vector2 launchVelocity = Vector2{ cos(angle) * bulletSpeed,
+											  sin(angle) * bulletSpeed
+					};
+					pNewEnemyBullet->position = launchPosition;
+					pNewEnemyBullet->velocity = launchVelocity;
+
+					sprites.push_back(pEnemyBulletCastedToSprite);
+
+				}
+
+
+			}
+
+		}
+	}
 }
 
 void Game::updateBoss()

@@ -75,7 +75,8 @@ bool Sprite::isCollidingWith(Sprite* other)
 	float otherRadius = max(other->getSize().x, other->getSize().y) * 0.5f;
 	
 	//2. Find the sum of both radii
-	float sumRadii = myRadius + otherRadius;
+	//Made hitbox smaller, was hard to dodge projectiles
+	float sumRadii = myRadius/2 + otherRadius/2;
 
 	//3. Find the distance between the circles
 	//3.1 subtract positions to get vector from one to the other

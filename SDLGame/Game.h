@@ -32,7 +32,9 @@ enum class AudioChannel
 {
 	ANY = -1,
 	MUSIC,
-	LASER_BLAST
+	LASER_BLAST,
+	EXPLOSION,
+	ALERT
 };
 
 class Game
@@ -52,6 +54,7 @@ class Game
 	Sprite myBackground3;
 	Sprite myExplosion;
 	Sprite youLose;
+	Sprite youWin;
 	Sprite boss;
 
 	//Sprite mySpritesheet;
@@ -60,16 +63,20 @@ class Game
 	const float timeBetweenShots = 0.25f; // this represents fire rate (1/fire rate to be exact)
 	float timeBeforeNextShot = 0.0f; // this will tick down
 
-	const float timeBetweenEnemyShots = 0.72f;
+	const float timeBetweenEnemyShots = 1.0f;
 	float timeBeforeNextEnemyShot = 0.0f;
+
+	const float timeBetweenBossShots = 1.0f;
+	float timeBeforeNextBossShot = 0.0f;
 
 	//3 sec timer after death
 	const float timeBetweenDeath = 3.0f;
 	float deathTimer = 0.0f;
-	const float timeForBoss = 2.0f;
+	const float timeForBoss = 20.0f;
 	float countdown = 0.0f;
 
-
+	int bossHit = 0;
+	int* pBossHit;
 
 	float gameTime = 0.0f; // seconds since start of game
 	float fixedDeltaTime = 0.016f; // time between frames 0.016 == 1/60
@@ -88,12 +95,14 @@ class Game
 	
 	//Enemy spawns
 	float enemySpawnTimer = 0.0f;
-	float enemySpawnInterval = 1.0f;
-	const float enemySpawnIntervalMin = 0.5f;
+	float enemySpawnInterval = 2.0f;
+	const float enemySpawnIntervalMin = 1.0f;
 
 	//Audio
 	Mix_Chunk* bgm;
 	Mix_Chunk* laserBlast;
+	Mix_Chunk* explosion;
+	Mix_Chunk* alert;
 
 	float volumeScale = 0.5f;
 	float baseVolumeLaser = 32.0f;
@@ -119,5 +128,6 @@ public:
 	void spawnEnemy(const float deltaTime);
 	void updateBoss();
 	void updateBG();
+	void spawnBossBullets(const float deltaTime);
 };
 
