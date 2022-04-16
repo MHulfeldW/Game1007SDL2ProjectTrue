@@ -1,5 +1,10 @@
 Helpfull tutorial:
 
+Enemy Sprites:
+Author: Skorpio
+https://opengameart.org/users/skorpio
+
+
 Scrolling BG:
 -https://lazyfoo.net/tutorials/SDL/31_scrolling_backgrounds/index.php
 

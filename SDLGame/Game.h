@@ -81,7 +81,8 @@ class Game
 	bool bossSpawned = false;
 
 	bool isShooting = false;
-
+	int xOffset = 2;
+	
 	//Enemy spawns
 	float enemySpawnTimer = 0.0f;
 	float enemySpawnInterval = 2.0f;

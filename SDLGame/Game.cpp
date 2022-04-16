@@ -231,18 +231,17 @@ void Game::update(const float deltaTime)
 		if (pSprite->position.y >= windowSizeY/2 - pSprite->getSize().y && pSprite->tag == SpriteTag::BOSS)
 		{
 			pSprite->position.y = windowSizeY /2 - pSprite->getSize().y;
-			const int xOffset = 2;
+			int* pOffset = &xOffset;
 			
 			
 			pSprite->position.x = pSprite->position.x + xOffset;
 			if (pSprite->position.x >= windowSizeX- pSprite->getSize().x)
 			{
-				
-				pSprite->position.x = pSprite->position.x - xOffset;
+				*pOffset = -2;
 			}
-			else if (pSprite->position.x <= 0)
+			else if (pSprite->position.x <= 1)
 			{
-				/**pX = 1;*/
+				*pOffset = 2;
 			}
 			
 		}
