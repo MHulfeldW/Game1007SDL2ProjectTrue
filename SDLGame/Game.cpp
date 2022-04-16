@@ -80,6 +80,8 @@ int Game::run()
 	explosion = Mix_LoadWAV(filePathExplosion);
 	const char* filePathAlert = "Assets/Sounds/alert-normal.wav";
 	alert = Mix_LoadWAV(filePathAlert);
+	const char* filePathBoss = "Assets/Sounds/bosslaser.wav";
+	bossLaser = Mix_LoadWAV(filePathBoss);
 	setVolume(volumeScale);
 
 	//Sprites
@@ -194,6 +196,8 @@ void Game::update(const float deltaTime)
 	
 	updateBG();
 	updateCollisionChecks(deltaTime);
+
+	//Timer for Boss
 	if (myShip.isMarkedForDeletion)
 	{
 		countdown = 0;
@@ -517,8 +521,9 @@ void Game::updateCollisionChecks(const float deltaTime)
 					//On death we clean the screen to set the game to the default state
 					for (int i = 0; i < sprites.size(); i++)
 					{
-						sprites[i]->isMarkedForDeletion;
-						sprites[i]->cleanup();
+						Sprite* pSprite = sprites[i];
+						pSprite->isMarkedForDeletion;
+						pSprite->cleanup();
 					
 					}
 				}
@@ -723,7 +728,7 @@ void Game::spawnBossBullets(const float deltaTime)
 				{
 					float angle = ((spread / (projectilesPerShot - 1)) * i) + (spread);
 
-					Mix_PlayChannel((int)AudioChannel::LASER_BLAST, laserBlast, 0);
+					Mix_PlayChannel((int)AudioChannel::BOSS, bossLaser, 0);
 					Enemy_Bullet* pNewEnemyBullet = new Enemy_Bullet(pRenderer); // the new keyword creates an instance of that class type, and returns a pointer to it
 					// The danger of the new keyword is that we are now responsible for deallocating the memory for this object with the keyword delete
 					Sprite* pEnemyBulletCastedToSprite = (Sprite*)pNewEnemyBullet; // cast from child class to base class pointer

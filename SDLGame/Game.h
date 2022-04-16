@@ -34,7 +34,8 @@ enum class AudioChannel
 	MUSIC,
 	LASER_BLAST,
 	EXPLOSION,
-	ALERT
+	ALERT,
+	BOSS
 };
 
 class Game
@@ -72,7 +73,7 @@ class Game
 	//3 sec timer after death
 	const float timeBetweenDeath = 3.0f;
 	float deathTimer = 0.0f;
-	const float timeForBoss = 20.0f;
+	const float timeForBoss = 2.0f;
 	float countdown = 0.0f;
 
 	int bossHit = 0;
@@ -101,6 +102,7 @@ class Game
 	//Audio
 	Mix_Chunk* bgm;
 	Mix_Chunk* laserBlast;
+	Mix_Chunk* bossLaser;
 	Mix_Chunk* explosion;
 	Mix_Chunk* alert;
 

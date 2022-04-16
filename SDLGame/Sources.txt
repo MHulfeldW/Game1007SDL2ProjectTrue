@@ -11,3 +11,7 @@ Scrolling BG:
 bgm:
 cinameng
 https://opengameart.org/content/ix
+
+boss laser:
+Author: Michael Kurinnoy
+https://opengameart.org/content/space-battle-game-sounds-astromenace
