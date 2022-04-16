@@ -113,7 +113,7 @@ void Sprite::cleanup()
 {
 	SDL_DestroyTexture(pTexture);
 }
-void Sprite::animate(Sprite obj, Sprite obj2, SDL_Renderer* pRenderer)
+void Sprite::animate(Sprite obj, Sprite obj2)
 {	
 	obj.src.w = obj.src.h;
 	obj.dst.w = obj2.src.w;
@@ -132,6 +132,5 @@ void Sprite::animate(Sprite obj, Sprite obj2, SDL_Renderer* pRenderer)
 	}
 	obj.src.x = m_iSprite * obj.src.w;
 	m_iFrame++;
-	obj.draw(pRenderer);
 }
 

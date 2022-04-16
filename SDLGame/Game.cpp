@@ -228,17 +228,22 @@ void Game::update(const float deltaTime)
 	updatePlayerActions(deltaTime);
 	if(countdown > timeForBoss + 2.0f)
 	{ 
-		
+		if (myShip.isMarkedForDeletion)
+		{
+			*pBossSpawn = false;
+		}
 		if (!*pBossSpawn )
 		{
 			updateBoss();
 			*pBossSpawn = true;
 		}
-		if (myShip.isMarkedForDeletion)
-		{
-			*pBossSpawn = false;
-		}
+		
 	}
+	/*for (int i = 0; i < sprites.size(); i++)
+	{
+		Sprite* pSprite = sprites[i];
+		pSprite->animate(myExplosion,*pSprite);
+	}*/
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		Sprite* pSprite = sprites[i];
@@ -289,7 +294,7 @@ void Game::update(const float deltaTime)
 		// i.e. a->b is equivalent to (*a).b
 		if ((*pSprite).isMarkedForDeletion)
 		{
-			myExplosion.animate(myExplosion, *pSprite, pRenderer);
+			
 			//clear the memory from the image of the sprite!
 			pSprite->cleanup();
 			// destroy it!
@@ -330,10 +335,10 @@ void Game::draw()
 	for (int i = 0; i < sprites.size(); i++)
 	{ 	
 		Sprite* pSprite = sprites[i];
-		myExplosion.animate(myExplosion, *pSprite, pRenderer);
+		/*myExplosion.animate(myExplosion, *pSprite, deathLoc pRenderer);*/
 		if (pSprite->isMarkedForDeletion && pSprite->tag == SpriteTag::OBSTACLE)
 		{
-			/*myExplosion.animate(myExplosion, *pSprite, pRenderer);*/
+			myExplosion.draw(pRenderer);
 		}
 	}
 
@@ -365,7 +370,7 @@ void Game::cleanup()
 	myBackground2.cleanup();
 	myBackground3.cleanup();
 	myExplosion.cleanup();
-	//mySpritesheet.cleanup();
+
 }
 
 
@@ -391,28 +396,11 @@ void Game::updatePlayerActions(const float deltaTime)
 	{
 		inputVector.x += 1;
 	}
-	/*soundTimer -= deltaTime;*/
+	
 	if (isDownPressed)
 	{
 		inputVector.y += 1;
-		/*if (soundTimer <= 0.0f)
-		{
-
-
-			if (Mix_Playing((int)AudioChannel::MUSIC == 1))
-			{
-
-				Mix_HaltChannel((int)AudioChannel::MUSIC);
-				std::cout << "Loop stopped with 's'\n";
-
-			}
-			else
-			{
-				Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
-				std::cout << "Pressing 's' plays loop sound!\n";
-			}
-			soundTimer = timeBetweenSound;
-		}*/
+	
 	}
 	if (isLeftPressed)
 	{
@@ -510,7 +498,7 @@ void Game::updateCollisionChecks(const float deltaTime)
 	if (deathTimer <= 0.0f)
 	{
 		myShip.isMarkedForDeletion = false;
-		std::cout << "Fixed!" << std::endl;
+		
 	}
 	for (int i = 0; i < sprites.size(); i++)
 	{
@@ -524,7 +512,6 @@ void Game::updateCollisionChecks(const float deltaTime)
 				if(!myShip.isMarkedForDeletion)
 				{ 
 					myShip.isMarkedForDeletion = true;
-					std::cout << "Game Over!" << std::endl;
 					deathTimer = timeBetweenDeath;
 					//On death we clean the screen to set the game to the default state
 					for (int i = 0; i < sprites.size(); i++)
@@ -551,9 +538,11 @@ void Game::updateCollisionChecks(const float deltaTime)
 			{
 				if (pSpriteA->tag == SpriteTag::BULLET   && pSpriteB->tag == SpriteTag::OBSTACLE ||
 					pSpriteA->tag == SpriteTag::OBSTACLE && pSpriteB->tag == SpriteTag::BULLET)
-				{
+				{	
+					
 					pSpriteA->isMarkedForDeletion = true;
-					pSpriteB->isMarkedForDeletion = true;
+					pSpriteB->isMarkedForDeletion = true; 
+					
 					
 				}
 				/*if (pSpriteA->tag == SpriteTag::PLAYER && pSpriteB->tag == SpriteTag::ENEMY_BULLET ||

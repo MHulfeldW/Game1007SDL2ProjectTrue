@@ -88,8 +88,8 @@ class Game
 	
 	//Enemy spawns
 	float enemySpawnTimer = 0.0f;
-	float enemySpawnInterval = 2.0f;
-	const float enemySpawnIntervalMin = 0.2f;
+	float enemySpawnInterval = 1.0f;
+	const float enemySpawnIntervalMin = 0.5f;
 
 	//Audio
 	Mix_Chunk* bgm;
@@ -98,6 +98,8 @@ class Game
 	float volumeScale = 0.5f;
 	float baseVolumeLaser = 32.0f;
 	float baseVolumeMusic = 64.0f;
+
+
 
 public:
 	Game();
