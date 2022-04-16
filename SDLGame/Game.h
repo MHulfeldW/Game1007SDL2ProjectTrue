@@ -66,6 +66,9 @@ class Game
 	//3 sec timer after death
 	const float timeBetweenDeath = 3.0f;
 	float deathTimer = 0.0f;
+	const float timeForBoss = 2.0f;
+	float countdown = 0.0f;
+
 
 
 	float gameTime = 0.0f; // seconds since start of game

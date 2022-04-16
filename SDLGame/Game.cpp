@@ -198,8 +198,14 @@ void Game::update(const float deltaTime)
 	
 	updateBG();
 	updateCollisionChecks(deltaTime);
-	
-	
+	if (myShip.isMarkedForDeletion)
+	{
+		countdown = 0;
+	}
+	countdown += deltaTime;
+	if (countdown < timeForBoss)
+	{
+
 		enemySpawnTimer -= deltaTime;
 
 		if (enemySpawnTimer < 0.0f)
@@ -207,7 +213,7 @@ void Game::update(const float deltaTime)
 			if (!myShip.isMarkedForDeletion)
 			{
 				//Every t seconds, spawn an asteroid
-				/*spawnEnemy(deltaTime);*/
+				spawnEnemy(deltaTime);
 				
 			}
 			enemySpawnTimer = enemySpawnInterval;
@@ -217,12 +223,21 @@ void Game::update(const float deltaTime)
 				enemySpawnInterval -= 0.1;
 			}
 		}
+	}
   
 	updatePlayerActions(deltaTime);
-	if (!*pBossSpawn )
-	{
-		updateBoss();
-		*pBossSpawn = true;
+	if(countdown > timeForBoss + 2.0f)
+	{ 
+		
+		if (!*pBossSpawn )
+		{
+			updateBoss();
+			*pBossSpawn = true;
+		}
+		if (myShip.isMarkedForDeletion)
+		{
+			*pBossSpawn = false;
+		}
 	}
 	for (int i = 0; i < sprites.size(); i++)
 	{
