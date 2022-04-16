@@ -38,7 +38,7 @@ enum class AudioChannel
 class Game
 {
 	int windowSizeX = 800; // Declaring integer called windowSizeX, assigning it the value 800
-	int windowSizeY = 900;
+	int windowSizeY = 1000;
 	const char* windowName = "Hello SDL";
 	SDL_Window* pWindow = nullptr; // Declaring a SDL_Window* (pointer to an object of type SDL_Window) called pWindow, assigning it the value nullptr
 	SDL_Renderer* pRenderer = nullptr;
@@ -63,7 +63,8 @@ class Game
 	const float timeBetweenEnemyShots = 0.72f;
 	float timeBeforeNextEnemyShot = 0.0f;
 
-	const float timeBetweenDeath = 5.0f;
+	//3 sec timer after death
+	const float timeBetweenDeath = 3.0f;
 	float deathTimer = 0.0f;
 
 

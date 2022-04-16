@@ -207,7 +207,7 @@ void Game::update(const float deltaTime)
 			if (!myShip.isMarkedForDeletion)
 			{
 				//Every t seconds, spawn an asteroid
-			/*	spawnEnemy(deltaTime);*/;
+				/*spawnEnemy(deltaTime);*/
 				
 			}
 			enemySpawnTimer = enemySpawnInterval;
@@ -224,14 +224,36 @@ void Game::update(const float deltaTime)
 		updateBoss();
 		*pBossSpawn = true;
 	}
-
+	for (int i = 0; i < sprites.size(); i++)
+	{
+		Sprite* pSprite = sprites[i];
+	
+		if (pSprite->position.y >= windowSizeY/2 - pSprite->getSize().y && pSprite->tag == SpriteTag::BOSS)
+		{
+			pSprite->position.y = windowSizeY /2 - pSprite->getSize().y;
+			const int xOffset = 2;
+			
+			
+			pSprite->position.x = pSprite->position.x + xOffset;
+			if (pSprite->position.x >= windowSizeX- pSprite->getSize().x)
+			{
+				
+				pSprite->position.x = pSprite->position.x - xOffset;
+			}
+			else if (pSprite->position.x <= 0)
+			{
+				/**pX = 1;*/
+			}
+			
+		}
+	}
 
 	for (int i = 0; i < sprites.size(); i++)
 	{
 		Sprite* pSprite = sprites[i];
 
 		if (pSprite->position.x > windowSizeX
-			|| pSprite->position.x < pSprite->getSize().x
+			|| pSprite->position.x < 0
 			|| pSprite->position.y > windowSizeY
 			|| pSprite->position.y < -pSprite->getSize().y
 			)
@@ -490,6 +512,7 @@ void Game::updateCollisionChecks(const float deltaTime)
 					myShip.isMarkedForDeletion = true;
 					std::cout << "Game Over!" << std::endl;
 					deathTimer = timeBetweenDeath;
+					//On death we clean the screen to set the game to the default state
 					for (int i = 0; i < sprites.size(); i++)
 					{
 						sprites[i]->cleanup();
@@ -572,8 +595,8 @@ void Game::spawnEnemy(const float deltaTime)
 	const int NUM_ENEMY_SPRITES = 3;
 	const char* enemySpriteImages[NUM_ENEMY_SPRITES] =
 	{
-		"Assets/Boss.png",
-		"Assets/ship6.png",
+		"Assets/small.drone_.1.png",
+		"Assets/part2artship1.png",
 		"Assets/ship2.png",
 	};
 	const char* spriteToSpawn = enemySpriteImages[rand() % NUM_ENEMY_SPRITES];
@@ -644,7 +667,11 @@ void Game::updateBoss()
 {
 	
 		int startVelocity = 200;
+		//Bug: If the png is to large in size it will ignore all this 
+		//Commenting out outofbounds function makes it appear
+		//Bug fixed: error in out of bounds check, position.x < getSize().x = wrong! Should be position.x < 0 
 		Sprite* pBoss = new Sprite(pRenderer, "Assets/Boss.png");
+		pBoss->tag = SpriteTag::BOSS;
 	
 		Vector2 size = pBoss->getSize();
 	
@@ -652,10 +679,12 @@ void Game::updateBoss()
 		pBoss->position = spawnPosition;
 
 		Vector2 spawnVelocity = Vector2{ 0,float(startVelocity)};
+		
 		pBoss->velocity = spawnVelocity;
+		
 
 		sprites.push_back(pBoss);
 	
-	
+		
 }
 	
