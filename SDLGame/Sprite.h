@@ -75,7 +75,7 @@ public:
 	void setSize(int width, int height);
 	void animate(Sprite obj, Sprite obj2);
 	
-	void update(const float deltaTime);
+	virtual void update(const float deltaTime);
 	void draw(SDL_Renderer* pRenderer) const; // const after the function says it will not change anything
 
 	void cleanup();

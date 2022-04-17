@@ -757,10 +757,9 @@ void Game::updateBoss()
 {
 	
 		int startVelocity = 200;
-		//Bug: If the png is to large in size it will ignore all this 
-		//Commenting out outofbounds function makes it appear
-		//Bug fixed: error in out of bounds check, position.x < getSize().x = wrong! Should be position.x < 0 
+
 		Sprite* pBoss = new Sprite(pRenderer, "Assets/Boss.png");
+	
 		pBoss->tag = SpriteTag::BOSS;
 	
 		Vector2 size = pBoss->getSize();

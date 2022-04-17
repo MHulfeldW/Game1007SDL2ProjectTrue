@@ -57,6 +57,7 @@ class Game
 	Sprite youLose;
 	Sprite youWin;
 	Sprite boss;
+	/*Boss boss2;*/
 
 	//Sprite mySpritesheet;
 	std::vector<Sprite*> sprites;
