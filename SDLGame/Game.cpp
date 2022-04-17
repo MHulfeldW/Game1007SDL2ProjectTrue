@@ -82,6 +82,8 @@ int Game::run()
 	alert = Mix_LoadWAV(filePathAlert);
 	const char* filePathBoss = "Assets/Sounds/bosslaser.wav";
 	bossLaser = Mix_LoadWAV(filePathBoss);
+	const char* filePathBossBGM = "Assets/Sounds/boss bgm.wav";
+	bossBGM = Mix_LoadWAV(filePathBossBGM);
 	setVolume(volumeScale);
 
 	//Sprites
@@ -215,7 +217,7 @@ void Game::update(const float deltaTime)
 		{
 			if (!myShip.isMarkedForDeletion)
 			{
-				//Every t seconds, spawn an asteroid
+				
 				spawnEnemy(deltaTime);
 				
 			}
@@ -231,10 +233,13 @@ void Game::update(const float deltaTime)
 	updatePlayerActions(deltaTime);
 	if(countdown >= timeForBoss + 2.0f)
 	{ 
-	
+		Mix_HaltChannel((int)AudioChannel::MUSIC);
 		if (*pBossSpawn==false)
 		{
+			
 			Mix_PlayChannel((int)AudioChannel::ALERT, alert, 0);
+			
+			Mix_PlayChannel((int)AudioChannel::BOSSBGM, bossBGM, -1);
 			updateBoss();
 			*pBossSpawn = true;
 			
@@ -243,6 +248,7 @@ void Game::update(const float deltaTime)
 	}	
 	if (myShip.isMarkedForDeletion)
 	{
+		Mix_HaltChannel((int)AudioChannel::BOSSBGM);
 		for (int i = 0; i < sprites.size(); i++)
 		{
 			Sprite* pSprite = sprites[i];
@@ -251,9 +257,15 @@ void Game::update(const float deltaTime)
 			if (pSprite->tag == SpriteTag::BOSS)
 			{
 				pSprite->isMarkedForDeletion;
+				
 			}
 		}
 		*pBossSpawn = false;
+		//Worked and broke from one try to the next, even though i made no changes to it
+		/*if(Mix_Playing((int)AudioChannel::MUSIC ==  0))
+		{ */
+			Mix_PlayChannel((int)AudioChannel::MUSIC, bgm, -1);
+		/*}*/
 	}
 		
 	
@@ -608,7 +620,7 @@ void Game::spawnEnemyBullets(const float deltaTime)
 		if (pSprite->tag == SpriteTag::OBSTACLE)
 		{	
 			timeBeforeNextEnemyShot -= deltaTime;
-			if(timeBeforeNextEnemyShot<=0.0f && !pSprite->isMarkedForDeletion)
+			if(timeBeforeNextEnemyShot<=0.0f && !myShip.isMarkedForDeletion)
 			{ 
 				timeBeforeNextEnemyShot = timeBetweenEnemyShots;
 
@@ -707,6 +719,10 @@ void Game::setVolume(float a_volumeScale)
 	
 	Mix_Volume((int)AudioChannel::MUSIC, baseVolumeMusic * volumeScale);
 	Mix_Volume((int)AudioChannel::LASER_BLAST, baseVolumeMusic * volumeScale);
+	Mix_Volume((int)AudioChannel::ALERT, baseVolumeMusic * volumeScale);
+	Mix_Volume((int)AudioChannel::EXPLOSION, baseVolumeMusic * volumeScale);
+	Mix_Volume((int)AudioChannel::BOSS, baseVolumeMusic * volumeScale);
+	Mix_Volume((int)AudioChannel::BOSSBGM, baseVolumeMusic * volumeScale);
 }
 
 void Game::spawnBossBullets(const float deltaTime)
